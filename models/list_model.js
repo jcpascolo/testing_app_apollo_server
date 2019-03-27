@@ -9,9 +9,10 @@ const list = (sequelize, DataTypes) => {
   
     List.associate = models => {
       List.hasMany(models.Task, { onDelete: 'CASCADE' });
+      List.belongsTo(models.User, { onDelete: 'SET NULL'})
     };
   
-    return List;
-  };
+  return List;
+};
   
-  export default list;
+export default list;

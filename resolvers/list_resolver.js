@@ -1,7 +1,8 @@
-import { PubSub } from "apollo-server";
-
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
+
+import { combineResolvers } from 'graphql-resolvers';
+import { isOwner } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -72,21 +73,25 @@ export default{
         },
 
         //deleteList(id: ID!): String!
-        deleteList: async (parent, args, { models }) => {
-            try{
-                await models.List.destroy({
-                    where: {
-                        id: args.id,
-                    }
-                })
-                pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "" }, action: DELETE}})
-                return "The List has been destroyed successfuly";
-            }
-            catch(err){
-                throw new Error("Error al borrar la lista");
-            }
-            
-        },
+        deleteList: combineResolvers(
+            isOwner,
+            async (parent, args, { models }) => {
+                try{
+                    await models.List.destroy({
+                        where: {
+                            id: args.id,
+                        }
+                    })
+                    pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "" }, action: DELETE}})
+                    return "The List has been destroyed successfuly";
+                }
+                catch(err){
+                    throw new Error("Error al borrar la lista");
+                }
+                
+            },
+        )
+        
     },
 
     Subscription: {

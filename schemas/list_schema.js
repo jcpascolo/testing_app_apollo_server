@@ -6,7 +6,9 @@ export default gql`
     type List {
         id: ID!
         name: String!
-        tasks: [Task]
+        tasks: [Task!]
+        userId: ID!
+        public: Boolean!
     }
 
     # The "Query" type is the root of all GraphQL queries.
