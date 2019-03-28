@@ -71,7 +71,7 @@ export default {
                 
                 
                 const { id, username, email } = result
-                return {username: username, 
+                return {username: username,
                         token: jwt.sign(
                             { id, email }, 
                             JWT_KEY, 
@@ -103,7 +103,7 @@ export default {
                     if(validPassword){
                         const { id, username, email } = registered
 
-                        return {username: username, 
+                        return {username: username,
                             token: jwt.sign(
                                 { id, email }, 
                                 JWT_KEY, 

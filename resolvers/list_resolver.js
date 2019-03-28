@@ -21,6 +21,7 @@ const ADD = 1;
 const DELETE = 2;
 
 import Sequelize from 'sequelize';
+import { withFilter } from 'apollo-server';
 const Op = Sequelize.Op;
 
 export default{
@@ -117,9 +118,23 @@ export default{
 
     Subscription: {
         listSub: {
-            subscribe: () => { 
-                return pubsub.asyncIterator([SUB_LIST]); 
-            },
+            subscribe: withFilter(
+                () => { 
+                    return pubsub.asyncIterator([SUB_LIST]); 
+                },
+
+                (payload, args, { auth }) => {
+                    console.log("En la subscripcion")
+                    console.log(auth)
+                    if((payload.listSub.list.userId == auth.id) || (payload.listSub.list.public == true)){
+                        return true
+                    }
+                    else{
+                        return false
+                    }
+                    
+                }
+            )
         }
     },
 

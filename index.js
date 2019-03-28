@@ -16,6 +16,7 @@ const app = express();
 const JWT_KEY = 'supersecret123';
 const EXPIRE_TOKEN = "7d";
 
+
 const authentication = async (reqHeader) => {
   let token;
 
@@ -42,8 +43,17 @@ const authentication = async (reqHeader) => {
 }
 
 const server = new ApolloServer({ 
-  typeDefs: schema, 
-  resolvers, 
+  typeDefs: schema,
+
+  resolvers,
+
+  /*subscriptions: {
+    onConnect: async (reqHeader) => {
+      return {auth: await authentication(reqHeader)}
+    }
+  },
+  */
+
   context: async (reqHeader) => {
     return {
       models,
