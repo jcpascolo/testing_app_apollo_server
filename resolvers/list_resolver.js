@@ -45,8 +45,8 @@ export default{
                 else{
                      result = await models.List.findAll({
                          where: {
-                             public: true,
-                         }
+                            public: true,
+                        }
                      });
                 }
                 return result
