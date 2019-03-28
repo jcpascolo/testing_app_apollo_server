@@ -18,7 +18,7 @@ export default gql`
     }
 
     extend type Mutation {
-        addList(name: String!): List!
+        addList(name: String!, public: Boolean!): List!
         deleteList(id: ID!): String!
     }
 

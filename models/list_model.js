@@ -5,6 +5,10 @@ const list = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      public: {
+        type: DataTypes.BOOLEAN,
+        allowNull:false,
+      }
     });
   
     List.associate = models => {
