@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
 
     //database password
     'testing',
-  
+
     {
         dialect: 'postgres',
         port: 5432,
@@ -23,14 +23,13 @@ const models = {
     Task: sequelize.import('./task_model.js'),
     User: sequelize.import('./user_model.js')
 };
-  
+
 Object.keys(models).forEach(key => {
     if ('associate' in models[key]) {
-      models[key].associate(models);
+        models[key].associate(models);
     }
 });
-  
+
 export { sequelize };
-  
+
 export default models;
-  
