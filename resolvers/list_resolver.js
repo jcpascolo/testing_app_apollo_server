@@ -118,11 +118,6 @@ export default{
 
     Subscription: {
         listSub: {
-<<<<<<< HEAD
-            subscribe: async () => { 
-                return pubsub.asyncIterator([SUB_LIST]); 
-            },
-=======
             subscribe: withFilter(
                 () => { 
                     return pubsub.asyncIterator([SUB_LIST]); 
@@ -140,7 +135,6 @@ export default{
                     
                 }
             )
->>>>>>> origin/deve-jcgp
         }
     },
 
