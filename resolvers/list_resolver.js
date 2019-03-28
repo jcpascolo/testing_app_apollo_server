@@ -117,7 +117,7 @@ export default{
 
     Subscription: {
         listSub: {
-            subscribe: () => { 
+            subscribe: async () => { 
                 return pubsub.asyncIterator([SUB_LIST]); 
             },
         }

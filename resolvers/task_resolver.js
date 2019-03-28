@@ -3,6 +3,7 @@ import Redis from 'ioredis';
 
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './auth_resolver.js';
+import { withFilter } from 'apollo-server';
 
 const options = {
     host: '127.0.0.1',
@@ -166,14 +167,18 @@ export default{
 
     Subscription: {
         updateSub: {
-            subscribe: () => { 
+            subscribe: withFilter(() => pubsub.asyncIterator(SUB_UPDATE_TASK), (payload, variables) => {
+                return payload.update.id === variables.id;
+            }),
+            /*async() => { 
                 return pubsub.asyncIterator([SUB_UPDATE_TASK]) 
             },
-        },
+        },*/
 
-        deleteSub: {
-            subscribe: () => {
-                return pubsub.asyncIterator([SUB_DELETE_TASK])
+            deleteSub: {
+                subscribe: async() => {
+                    return pubsub.asyncIterator([SUB_DELETE_TASK])
+                }
             }
         },
     },
@@ -196,4 +201,5 @@ export default{
         }
     }
 };
+
 

@@ -62,12 +62,8 @@ sequelize.sync()
 .then( async () => {
 
   httpServer.listen({ port: 4000 }, () => {
-    console.log('Apollo Server on http://localhost:4000/graphql');
+    console.log('🚀 Apollo Server on http://localhost:4000/graphql');
   });
-/*
-  app.listen({port:4000}, 
-    () => console.log(`🚀  Server ready at http://localhost:4000${server.graphqlPath}`)
-  );
-*/
+
 })
 
