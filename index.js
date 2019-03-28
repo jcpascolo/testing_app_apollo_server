@@ -14,10 +14,17 @@ import jwt from 'jsonwebtoken';
 const app = express();
 
 const JWT_KEY = 'supersecret123';
-const EXPIRE_TOKEN = "2m";
+const EXPIRE_TOKEN = "7d";
 
 const authentication = async (reqHeader) => {
-  const token = reqHeader.req.headers['x-token'];
+  let token;
+
+  if(reqHeader.req == undefined) {
+    token = reqHeader.connection.context['x-token']
+  }
+  else {
+    token = reqHeader.req.headers['x-token'];
+  }
   
   if(token){
     try{

@@ -5,13 +5,18 @@ const list = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      public: {
+        type: DataTypes.BOOLEAN,
+        allowNull:false,
+      }
     });
   
     List.associate = models => {
       List.hasMany(models.Task, { onDelete: 'CASCADE' });
+      List.belongsTo(models.User, { onDelete: 'SET NULL'})
     };
   
-    return List;
-  };
+  return List;
+};
   
-  export default list;
+export default list;
