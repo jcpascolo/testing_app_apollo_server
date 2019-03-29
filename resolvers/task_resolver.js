@@ -2,7 +2,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated, isOwner } from './auth_resolver.js';
+import { isAuthenticated, permitedTaskDelete } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -15,6 +15,7 @@ const pubsub = new RedisPubSub({
 });
 
 import { withFilter } from 'apollo-server';
+import { sequelize } from '../models/models.js';
 
 //subscription task
 const SUB_UPDATE_TASK = 'SUB_UPDATE_TASK';
@@ -69,11 +70,12 @@ export default{
         //addTask(listId: ID!, text: String!): Task
         addTask: combineResolvers(
             isAuthenticated,
-            async (parent, args, {models}) => {
+            async (parent, args, {models, auth}) => {
                 try{
                     let result = await models.Task.create({
                         listId: args.listId,
                         text: args.text,
+                        userId: auth.id,
                     });    
         
                     //publicamos la nueva tarea
@@ -93,23 +95,30 @@ export default{
         ),
 
 
-        //deleteTask(id: [ID!]): String
+        //deleteTask(id: ID!, inPublicList: Boolean!): String
         deleteTasks: combineResolvers(
-            isOwner,
+            permitedTaskDelete,
             async (parent, args, {models}) => {
                 try{
-                    let result = await models.Task.destroy({
+                    
+                    const result = await models.Task.findOne({
+                        where: {
+                            id: args.id,
+                        }
+                    });
+                    const number_of_destroy = await models.Task.destroy({
                         where:{
                             id: args.id,
                         }
                     });
-    
+                    
                     //publicamos la tarea borrada
-                    pubsub.publish(SUB_DELETE_TASK, { deleteSub: { 
-                        ids: args.id,
-                    }});
-    
-                    return result
+                    
+                    console.log("vamos a la publicacion")
+                    pubsub.publish(SUB_DELETE_TASK, { deleteSub: { id: args.id, userId: result.userId, inPublicList: args.inPublicList }});
+                    console.log("pasó la publicacion")
+                    return number_of_destroy
+                    
                 }
                 catch(err){
                     console.log(err.errors[0].type)
@@ -179,28 +188,23 @@ export default{
             },
         },
 
-
         deleteSub:{
             subscribe: withFilter(
                 () => { 
                     return pubsub.asyncIterator([SUB_DELETE_TASK]); 
                 },
     
-                async (payload, args, { models, auth }) => {
-                    if( payload.updateSub.task.userId == auth.id ){
+                (payload, args, { models, auth }) => {
+                    if( payload.deleteSub.inPublicList == true ){
                         return true
                     }
                     else{
-                        const result = await models.List.findOne({
-                            attributes: ['public'],
-                            where: {
-                                id: payload.updateSub.task.listId,
-                            }
-                        });
-
-                        console.log(result)
-
-                        return result
+                        if(payload.deleteSub.userId == auth.id){
+                            return true;
+                        }
+                        else{
+                            return false;
+                        }
                     }               
                 }
             )

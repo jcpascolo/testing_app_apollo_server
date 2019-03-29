@@ -1,8 +1,10 @@
 //https://knexjs.org/
 //docker exec -it postgres psql -U postgres tododb
 
+
 const express = require('express')
-const { ApolloServer, AuthenticationError } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
+
 
 import http from 'http';
 import schema from './schemas/schemas';
@@ -44,16 +46,7 @@ const authentication = async (reqHeader) => {
 
 const server = new ApolloServer({ 
   typeDefs: schema,
-
   resolvers,
-
-  /*subscriptions: {
-    onConnect: async (reqHeader) => {
-      return {auth: await authentication(reqHeader)}
-    }
-  },
-  */
-
   context: async (reqHeader) => {
     return {
       models,
@@ -74,10 +67,7 @@ sequelize.sync()
   httpServer.listen({ port: 4000 }, () => {
     console.log('Apollo Server on http://localhost:4000/graphql');
   });
-/*
-  app.listen({port:4000}, 
-    () => console.log(`🚀  Server ready at http://localhost:4000${server.graphqlPath}`)
-  );
-*/
+
 })
+
 
