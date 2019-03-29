@@ -2,7 +2,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated, isTaskOwner } from './auth_resolver.js';
+import { isAuthenticated, permitedTaskDelete } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -97,7 +97,7 @@ export default{
 
         //deleteTask(id: ID!, inPublicList: Boolean!): String
         deleteTasks: combineResolvers(
-            isTaskOwner,
+            permitedTaskDelete,
             async (parent, args, {models}) => {
                 try{
                     
