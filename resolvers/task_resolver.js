@@ -207,10 +207,10 @@ export default{
                     }               
                 }
             )
-        },
+        }
         
     },
-
+},
     Task: {
         list: async (parent, args, { models }) => {
             try{
@@ -228,7 +228,8 @@ export default{
             
         },
     },
-},
-};
+}
+
+
 
 
