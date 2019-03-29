@@ -21,11 +21,9 @@ const task = (sequelize, DataTypes) => {
   
     Task.associate = models => {
       Task.belongsTo(models.List, {onDelete: 'CASCADE'});
+      Task.belongsTo(models.User, {onDelete: 'SET NULL'});
     };
 
-    Task.associate = models => {
-      Task.belongsTo(models.User, {onDelete: 'SET NULL'})
-    }
   
     return Task;
   };

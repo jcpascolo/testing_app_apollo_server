@@ -30,7 +30,8 @@ const user = (sequelize, DataTypes) => {
     });
     
     User.associate = models => {
-        User.hasMany(models.Task, { onDelete: 'CASCADE' });
+        User.hasMany(models.Task, { onDelete: 'SET NULL' });
+        User.hasMany(models.List, { onDelete: '' });
     };
 
     User.beforeCreate( async (user) => {

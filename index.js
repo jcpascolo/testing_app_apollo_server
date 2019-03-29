@@ -1,8 +1,10 @@
 //https://knexjs.org/
 //docker exec -it postgres psql -U postgres tododb
 
+
 const express = require('express')
-const { ApolloServer, AuthenticationError } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
+
 
 import http from 'http';
 import schema from './schemas/schemas';
@@ -14,10 +16,18 @@ import jwt from 'jsonwebtoken';
 const app = express();
 
 const JWT_KEY = 'supersecret123';
-const EXPIRE_TOKEN = "2m";
+const EXPIRE_TOKEN = "7d";
+
 
 const authentication = async (reqHeader) => {
-  const token = reqHeader.req.headers['x-token'];
+  let token;
+
+  if(reqHeader.req == undefined) {
+    token = reqHeader.connection.context['x-token']
+  }
+  else {
+    token = reqHeader.req.headers['x-token'];
+  }
   
   if(token){
     try{
@@ -35,8 +45,8 @@ const authentication = async (reqHeader) => {
 }
 
 const server = new ApolloServer({ 
-  typeDefs: schema, 
-  resolvers, 
+  typeDefs: schema,
+  resolvers,
   context: async (reqHeader) => {
     return {
       models,
@@ -57,10 +67,7 @@ sequelize.sync()
   httpServer.listen({ port: 4000 }, () => {
     console.log('Apollo Server on http://localhost:4000/graphql');
   });
-/*
-  app.listen({port:4000}, 
-    () => console.log(`🚀  Server ready at http://localhost:4000${server.graphqlPath}`)
-  );
-*/
+
 })
+
 

@@ -9,6 +9,7 @@ export default gql`
         text: String!
         done: Boolean!
         listId: ID!
+        userId: ID!
     }
 
     # The "Query" type is the root of all GraphQL queries.
@@ -19,7 +20,7 @@ export default gql`
 
     extend type Mutation {
         addTask(listId: ID!, text: String!): Task
-        deleteTasks(id: [ID!]): String
+        deleteTasks(id: ID!, inPublicList: Boolean!): String
         #deleteMultipleTasks(id_array: [ID!]!): String
         markDone(id: ID!, done: Boolean!): Boolean
     }
@@ -35,7 +36,9 @@ export default gql`
     }
 
     type deleteResponse {
-        ids: [ID!]
+        id: ID!
+        userId: ID!
+        inPublicList: Boolean!
     }
 
     extend type Subscription{

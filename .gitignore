@@ -1,3 +1,4 @@
 rdata
 pgdata
 *.zip
+node_modules

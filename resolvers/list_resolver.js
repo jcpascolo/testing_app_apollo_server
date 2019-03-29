@@ -1,7 +1,8 @@
-import { PubSub } from "apollo-server";
-
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
+
+import { combineResolvers } from 'graphql-resolvers';
+import { isListOwner, isAuthenticated } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -9,10 +10,8 @@ const options = {
 }
 
 const pubsub = new RedisPubSub({
-
     publisher: new Redis(options),
     subscriber: new Redis(options)
-
 });
 
 //subscription list
@@ -20,6 +19,10 @@ const SUB_LIST = 'SUB_LIST';
 
 const ADD = 1;
 const DELETE = 2;
+
+import Sequelize from 'sequelize';
+import { withFilter } from 'apollo-server';
+const Op = Sequelize.Op;
 
 export default{
     allowedListAction: {
@@ -29,22 +32,37 @@ export default{
 
     Query: {
         //lists: [List]  => return all lists
-        lists: async (parent, arg, { models }) => {
+        lists: async (parent, args, { models, auth }) => {
             try{
-                return await models.List.findAll();
+                let result = [];
+                if(auth){
+                    result = await models.List.findAll({
+                        where: {
+                            [Op.or]: [{public: true}, {userId: auth.id}],
+                        }
+                    });
+                }
+                else{
+                     result = await models.List.findAll({
+                         where: {
+                             public: true,
+                         }
+                     });
+                }
+                return result
             }
             catch(err){
-                throw new Error("Error al listar todas las listas")
+                throw new Error("Error al listar todas las listas" + err.message)
             }
             
         },
 
         //list(id: ID!): List  => return the data of a specific list
-        list: async (parent, arg, { models }) => {
+        list: async (parent, args, { models }) => {
             try{
                 return await models.List.findOne({
                     where: {
-                        id: arg.id,
+                        id: args.id,
                     },
                 });
             }
@@ -56,44 +74,69 @@ export default{
     },
 
     Mutation: {
-        //addUser(listname: String!, email: String!): List
-        addList: async (parent, arg, { models }) => {
-            try{
-                let {dataValues, ...rest} = await models.List.create({
-                    name: arg.name,
-                });
-                
-                pubsub.publish(SUB_LIST, { listSub: {list: dataValues, action: ADD}})
-                return dataValues
-            }
-            catch(err){
-                throw new Error("Error al crear una lista");
-            }            
-        },
+        //addList(name: String!, public: Boolean!): List!
+        addList: combineResolvers(
+            isAuthenticated,
+            async (parent, args, { models, auth }) => {
+                try{
+                    let {dataValues, ...rest} = await models.List.create({
+                        name: args.name,
+                        public: args.public,
+                        userId: auth.id,
+                    });
+                    
+                    pubsub.publish(SUB_LIST, { listSub: {list: dataValues, action: ADD}})
+                    return dataValues
+                }
+                catch(err){
+                    throw new Error("Error al crear una lista");
+                }            
+            },
+        ),
 
         //deleteList(id: ID!): String!
-        deleteList: async (parent, args, { models }) => {
-            try{
-                await models.List.destroy({
-                    where: {
-                        id: args.id,
-                    }
-                })
-                pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "" }, action: DELETE}})
-                return "The List has been destroyed successfuly";
-            }
-            catch(err){
-                throw new Error("Error al borrar la lista");
-            }
-            
-        },
+        deleteList: combineResolvers(
+            isListOwner,
+            async (parent, args, { models, auth }) => {
+                try{
+                    
+                    await models.List.destroy({
+                        where: {
+                            id: args.id,
+                        },
+                    });
+                    
+
+                    pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "", userId: auth.id, public: false }, action: DELETE}});
+
+                    return "The List has been destroyed successfuly";
+                }
+                catch(err){
+                    throw new Error("Error al borrar la lista");
+                }
+                
+            },
+        )
+        
     },
 
     Subscription: {
         listSub: {
-            subscribe: () => { 
-                return pubsub.asyncIterator([SUB_LIST]); 
-            },
+            subscribe: withFilter(
+                () => { 
+                    return pubsub.asyncIterator([SUB_LIST]); 
+                },
+
+                (payload, args, { auth }) => {
+                    if((payload.listSub.list.userId == auth.id) || (payload.listSub.list.public == true)){
+                        return true
+                    }
+                    else{
+                        return false
+                    }
+                    
+                }
+            )
         }
     },
 
