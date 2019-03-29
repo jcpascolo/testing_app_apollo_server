@@ -15,6 +15,7 @@ const pubsub = new RedisPubSub({
 });
 
 import { withFilter } from 'apollo-server';
+import { sequelize } from '../models/models.js';
 
 //subscription task
 const SUB_UPDATE_TASK = 'SUB_UPDATE_TASK';
@@ -99,6 +100,7 @@ export default{
             isTaskOwner,
             async (parent, args, {models}) => {
                 try{
+                    
                     const result = await models.Task.findOne({
                         where: {
                             id: args.id,
@@ -109,12 +111,14 @@ export default{
                             id: args.id,
                         }
                     });
-
+                    
                     //publicamos la tarea borrada
+                    
                     console.log("vamos a la publicacion")
                     pubsub.publish(SUB_DELETE_TASK, { deleteSub: { id: args.id, userId: result.userId, inPublicList: args.inPublicList }});
                     console.log("pasó la publicacion")
                     return number_of_destroy
+                    
                 }
                 catch(err){
                     console.log(err.errors[0].type)
