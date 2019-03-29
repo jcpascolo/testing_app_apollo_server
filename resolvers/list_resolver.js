@@ -44,10 +44,10 @@ export default{
                 }
                 else{
                      result = await models.List.findAll({
-                         where: {
+                        where: {
                             public: true,
                         }
-                     });
+                    });
                 }
                 return result
             }
@@ -97,18 +97,14 @@ export default{
         //deleteList(id: ID!): String!
         deleteList: combineResolvers(
             isOwner,
-            async (parent, args, { models, auth }) => {
+            async (parent, args, { models }) => {
                 try{
-                    
                     await models.List.destroy({
                         where: {
                             id: args.id,
-                        },
-                    });
-                    
-
-                    pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "", userId: auth.id, public: false }, action: DELETE}});
-
+                        }
+                    })
+                    pubsub.publish(SUB_LIST, { listSub: {list: {id: args.id, name: "" }, action: DELETE}})
                     return "The List has been destroyed successfuly";
                 }
                 catch(err){
@@ -128,6 +124,8 @@ export default{
                 },
 
                 (payload, args, { auth }) => {
+                    console.log("En la subscripcion")
+                    console.log(auth)
                     if((payload.listSub.list.userId == auth.id) || (payload.listSub.list.public == true)){
                         return true
                     }
