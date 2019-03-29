@@ -2,7 +2,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 
 import { combineResolvers } from 'graphql-resolvers';
-import { isOwner, isAuthenticated } from './auth_resolver.js';
+import { isListOwner, isAuthenticated } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -96,8 +96,8 @@ export default{
 
         //deleteList(id: ID!): String!
         deleteList: combineResolvers(
-            isOwner,
-            async (parent, args, { models }) => {
+            isListOwner,
+            async (parent, args, { models, auth }) => {
                 try{
                     
                     await models.List.destroy({

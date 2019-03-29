@@ -10,7 +10,7 @@ export const isAuthenticated = (parent, args, {auth}) => {
     }
 };
 
-export const isOwner = async (parent, args, {models, auth}) => {
+export const isListOwner = async (parent, args, {models, auth}) => {
     if(auth){
         const result = await models.List.findOne({
             where:{
@@ -28,6 +28,34 @@ export const isOwner = async (parent, args, {models, auth}) => {
     else{
         throw new ForbiddenError('Usuario no identificado')
     }
+    
+}
+
+
+export const permitedTaskDelete = async (parent, args, {models, auth}) => {
+    if(args.inPublicList){
+        skip
+    }
+    else{
+        if(auth){
+            const result = await models.Task.findOne({
+                where:{
+                    id: args.id,
+                }
+            });
+        
+            if(result.userId == auth.id){
+                skip
+            }
+            else{
+                throw new ForbiddenError('Usuario no valido, no es usted el dueño de la lista')
+            }
+        }
+        else{
+            throw new ForbiddenError('Usuario no identificado')
+        }
+    }
+    
     
 }
 
