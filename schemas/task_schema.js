@@ -9,6 +9,7 @@ export default gql`
         text: String!
         done: Boolean!
         listId: ID!
+        userId: ID!
     }
 
     # The "Query" type is the root of all GraphQL queries.

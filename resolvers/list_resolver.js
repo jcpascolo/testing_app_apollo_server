@@ -43,7 +43,7 @@ export default{
                     });
                 }
                 else{
-                     result = await models.List.findAll({
+                    result = await models.List.findAll({
                         where: {
                             public: true,
                         }
@@ -99,6 +99,7 @@ export default{
             isOwner,
             async (parent, args, { models }) => {
                 try{
+                    
                     await models.List.destroy({
                         where: {
                             id: args.id,

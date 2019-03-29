@@ -2,8 +2,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated } from './auth_resolver.js';
-import { withFilter } from 'apollo-server';
+import { isAuthenticated, isOwner } from './auth_resolver.js';
 
 const options = {
     host: '127.0.0.1',
@@ -14,6 +13,8 @@ const pubsub = new RedisPubSub({
     publisher: new Redis(options),
     subscriber: new Redis(options)
 });
+
+import { withFilter } from 'apollo-server';
 
 //subscription task
 const SUB_UPDATE_TASK = 'SUB_UPDATE_TASK';
@@ -93,27 +94,30 @@ export default{
 
 
         //deleteTask(id: [ID!]): String
-        deleteTasks: async (parent, args, {models}) => {
-            try{
-                let result = await models.Task.destroy({
-                    where:{
-                        id: args.id,
-                    }
-                });
-
-                //publicamos la tarea borrada
-                pubsub.publish(SUB_DELETE_TASK, { deleteSub: { 
-                    ids: args.id,
-                }});
-
-                return result
-            }
-            catch(err){
-                console.log(err.errors[0].type)
-                throw new Error(err.errors[0].message);
-            }
-            
-        },
+        deleteTasks: combineResolvers(
+            isOwner,
+            async (parent, args, {models}) => {
+                try{
+                    let result = await models.Task.destroy({
+                        where:{
+                            id: args.id,
+                        }
+                    });
+    
+                    //publicamos la tarea borrada
+                    pubsub.publish(SUB_DELETE_TASK, { deleteSub: { 
+                        ids: args.id,
+                    }});
+    
+                    return result
+                }
+                catch(err){
+                    console.log(err.errors[0].type)
+                    throw new Error(err.errors[0].message);
+                }                
+            },
+        ),
+        
 
 
         //deleteMultipleTasks(id_array: [ID!]!): String
@@ -134,35 +138,38 @@ export default{
         },*/
 
         //markDone(id: ID!, done: Boolean!): Boolean
-        markDone: async (parent, args, {models}) => {
-            try{
-                let result = await models.Task.update(
-                    { done: args.done }, 
-                    { where:
-                        { id: args.id },
+        markDone: combineResolvers(
+            isAuthenticated,
+            async (parent, args, {models}) => {
+                try{
+                    let result = await models.Task.update(
+                        { done: args.done }, 
+                        { where:
+                            { id: args.id },
+                        }
+                    );
+    
+                    let modified_task = await models.Task.findOne({
+                        where: {
+                            id: args.id,
+                        }
+                    })
+    
+                    //publicamos la tarea modificada
+                    pubsub.publish(SUB_UPDATE_TASK, { updateSub: { task: modified_task , action: UPDATE }});
+                    if(result == 0){
+                        return false;
                     }
-                );
-
-                let modified_task = await models.Task.findOne({
-                    where: {
-                        id: args.id,
+                    else{
+                        return true;
                     }
-                })
-
-                //publicamos la tarea modificada
-                pubsub.publish(SUB_UPDATE_TASK, { updateSub: { task: modified_task , action: UPDATE }});
-                if(result == 0){
-                    return false;
                 }
-                else{
-                    return true;
+                catch{
+                    console.log(err.errors[0].type)
+                    throw new Error(err.errors[0].message);
                 }
-            }
-            catch{
-                console.log(err.errors[0].type)
-                throw new Error(err.errors[0].message);
-            }
-        },
+            },
+        ),
     },
 
     Subscription: {
@@ -175,12 +182,33 @@ export default{
             },
         },*/
 
-            deleteSub: {
-                subscribe: async() => {
-                    return pubsub.asyncIterator([SUB_DELETE_TASK])
+
+        deleteSub:{
+            subscribe: withFilter(
+                () => { 
+                    return pubsub.asyncIterator([SUB_DELETE_TASK]); 
+                },
+    
+                async (payload, args, { models, auth }) => {
+                    if( payload.updateSub.task.userId == auth.id ){
+                        return true
+                    }
+                    else{
+                        const result = await models.List.findOne({
+                            attributes: ['public'],
+                            where: {
+                                id: payload.updateSub.task.listId,
+                            }
+                        });
+
+                        console.log(result)
+
+                        return result
+                    }               
                 }
-            }
+            )
         },
+        
     },
 
     Task: {
@@ -198,8 +226,9 @@ export default{
                 throw new Error(err.errors[0].message);
             }
             
-        }
-    }
+        },
+    },
+},
 };
 
 
