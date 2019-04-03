@@ -1,0 +1,46 @@
+{
+  "name": "server_apollo_ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.$NODE_ENV.js",
+    "start": "node dist/index",
+    "start:env": "node --require dotenv/config dist/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/webpack-env": "^1.13.9",
+    "clean-webpack-plugin": "^2.0.1",
+    "dotenv": "^7.0.0",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.1",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-merge": "^4.2.1",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/bluebird": "^3.5.26",
+    "@types/graphql": "^14.2.0",
+    "@types/graphql-resolvers": "^0.2.0",
+    "@types/ioredis": "^4.0.10",
+    "@types/jsonwebtoken": "^8.3.2",
+    "@types/node": "^11.13.0",
+    "@types/validator": "^10.11.0",
+    "apollo-server": "^2.4.8",
+    "apollo-server-express": "^2.4.8",
+    "bcrypt": "^3.0.5",
+    "express": "^4.16.4",
+    "graphql": "^14.2.1",
+    "graphql-redis-subscriptions": "^2.1.0",
+    "graphql-resolvers": "^0.3.2",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^7.9.0",
+    "sequelize": "^5.2.9"
+  }
+}

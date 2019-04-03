@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    container_name: tspostgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=testing
+    ports:
+      - 5430:5430
+    volumes:
+      - /home/jcgp/Escritorio/tsApolloServer/pgdata:/var/lib/postgresql/data
+
+  redis:
+    container_name: tsredis
+    image: redis
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=testingredis
+    ports:
+      - 6370:6370
+    volumes:
+      - /home/jcgp/Escritorio/tsApolloServer/rdata:/var/lib/redis/dump.rdb
