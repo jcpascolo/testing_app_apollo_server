@@ -1,5 +1,6 @@
 //https://knexjs.org/
 //docker exec -it postgres psql -U postgres tododb
+////"start": "nodemon --exec babel-node --extensions \".js, .ts\" src/index.ts",
 
 require('dotenv/config');
 const express = require('express')
