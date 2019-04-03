@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=testing
     ports:
-      - 5430:5430
+      - 5432:5432
     volumes:
       - /home/jcgp/Escritorio/tsApolloServer/pgdata:/var/lib/postgresql/data
 
@@ -17,6 +17,6 @@ services:
       - REDIS_REPLICATION_MODE=master
       - REDIS_PASSWORD=testingredis
     ports:
-      - 6370:6370
+      - 6379:6379
     volumes:
       - /home/jcgp/Escritorio/tsApolloServer/rdata:/var/lib/redis/dump.rdb

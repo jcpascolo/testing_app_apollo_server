@@ -40,7 +40,7 @@ const authentication = async (reqHeader: any) => {
   }
 }
 
-console.log(process.env.EXPIRE_TOKEN)
+console.log("pepito")
 
 const server = new ApolloServer({ 
   typeDefs: schema,
