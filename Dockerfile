@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:10.15.3-alpine
+FROM node:10.15.3-alpine as base
 
 # Set the working directory to /app
 WORKDIR /app
@@ -18,3 +18,10 @@ EXPOSE 4000
 
 # Run app.py when the container launches
 CMD ["node", "dist/server.js"]
+
+
+FROM node:10.15.3-alpine
+COPY --from=base /app/dist /app/dist
+RUN npm install --production
+CMD ["node", "dist/server.js"]
+
