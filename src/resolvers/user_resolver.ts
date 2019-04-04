@@ -7,7 +7,7 @@ export default {
     
     Query: {
         //users: [User]
-        users: async (parent: undefined, args: undefined, context: IContext) => {
+        users: async (_: undefined, __: undefined, context: IContext) => {
             try{
                 return await context.models.User.findAll();
             }
@@ -18,7 +18,7 @@ export default {
         },
 
         //user(id: ID!): User
-        user: async (parent: undefined, args: IArgID, context: IContext) => {
+        user: async (_: undefined, args: IArgID, context: IContext) => {
             try{
                 let result = await context.models.User.findOne({
                     where: {
@@ -36,7 +36,7 @@ export default {
 
     Mutation: {
         //addUser(username: String!, email: String!, password: String!): Token!
-        addUser: async (parent: undefined, args: IArgAddUser, context: IContext) => {
+        addUser: async (_: undefined, args: IArgAddUser, context: IContext) => {
             try{
                 let result = await context.models.User.create({
                     username: args.username,
@@ -62,7 +62,7 @@ export default {
         },
 
         //logIn(email: String!, password: String!): Token!
-        logIn: async (parent: undefined, args: IArgLogUser, context: IContext) => {
+        logIn: async (_: undefined, args: IArgLogUser, context: IContext) => {
             try{
                 let registered = await context.models.User.findOne({
                     where: {
@@ -100,11 +100,6 @@ export default {
             
         },
 
-        //deleteUser(id: ID!): String!
     },
 
-
-    /*Subscription: {
-        userSub: UserResponse
-    }*/
 };

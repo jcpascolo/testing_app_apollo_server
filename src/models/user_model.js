@@ -14,31 +14,31 @@ const user = (sequelize, DataTypes) => {
             unique: true,
             allowNull: false,
             validate: {
-            notEmpty: true,
-            isEmail: true,
+                notEmpty: true,
+                isEmail: true,
+            },
         },
-    },
 
         password: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-            notEmpty: true,
-            len: [3, 16],
+                notEmpty: true,
+                len: [3, 16],
             },
         },
     });
-    
+
     User.associate = models => {
         User.hasMany(models.Task, { onDelete: 'SET NULL' });
         User.hasMany(models.List, { onDelete: '' });
     };
 
-    User.beforeCreate( async (user) => {
+    User.beforeCreate(async (user) => {
         user.password = await bcrypt.hash(user.password, SALT_ROUND);
     })
-    
-        return User;
-    };
-    
+
+    return User;
+};
+
 export default user;

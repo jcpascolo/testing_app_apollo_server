@@ -30,7 +30,7 @@ export default{
 
     Query: {
         //lists: [List]  => return all lists
-        lists: async (parent: undefined, args: undefined, context: IContext) => {
+        lists: async (_: undefined, __: undefined, context: IContext) => {
             try{
                 let result = [];
                 if(context.auth){
@@ -56,7 +56,7 @@ export default{
         },
 
         //list(id: ID!): List  => return the data of a specific list
-        list: async (parent: undefined, args: IArgID, context: IContext) => {
+        list: async (_: undefined, args: IArgID, context: IContext) => {
             try{
                 return await context.models.List.findOne({
                     where: {
@@ -75,9 +75,9 @@ export default{
         //addList(name: String!, public: Boolean!): List!
         addList: combineResolvers(
             isAuthenticated,
-            async (parent: undefined, args, context: IContext) => {
+            async (_: undefined, args, context: IContext) => {
                 try{
-                    let {dataValues, ...rest} = await context.models.List.create({
+                    let {dataValues} = await context.models.List.create({
                         name: args.name,
                         public: args.public,
                         userId: context.auth.id,
@@ -95,7 +95,7 @@ export default{
         //deleteList(id: ID!): String!
         deleteList: combineResolvers(
             isListOwner,
-            async (parent: undefined, args, { models, auth }) => {
+            async (_: undefined, args, { models, auth }) => {
                 try{
                     
                     await models.List.destroy({
@@ -125,7 +125,7 @@ export default{
                     return pubsub.asyncIterator([SUB_LIST]); 
                 },
 
-                (payload, args, { auth }) => {
+                (payload, _, { auth }) => {
                     if((payload.listSub.list.userId == auth.id) || (payload.listSub.list.public == true)){
                         return true
                     }
@@ -139,7 +139,7 @@ export default{
     },
 
     List: {
-        tasks: async (parent: List, arg: undefined, context: IContext) => {
+        tasks: async (parent: List, _: undefined, context: IContext) => {
             try{
                 let result = await context.models.Task.findAll({
                     where: {

@@ -15,8 +15,6 @@ RUN npm run build
 EXPOSE 4000
 
 # Define environment variable
-ENV JWT_KEY supersecret123
-ENV EXPIRE_TOKEN 7d
 
 # Run app.py when the container launches
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]

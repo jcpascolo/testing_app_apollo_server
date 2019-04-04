@@ -12,19 +12,6 @@ import resolvers from './resolvers/resolvers';
 import models, { sequelize } from './models/models';
 import jwt from 'jsonwebtoken';
 
-console.log(process.env.PORT)
-console.log(process.env.DB_USER)
-console.log(process.env.DB_HOST)
-  console.log(process.env.DB_USER)
-    console.log(process.env.DB_PASS)
-      console.log(process.env.DB_NAME)
-        console.log(process.env.DB_PORT)
-          console.log(process.env.RD_HOST)
-            console.log(process.env.RD_PORT)
-              console.log(process.env.PORT)
-                console.log(process.env.JWT_KEY)
-                  console.log(process.env.EXPIRE_TOKEN)
-
 
 const app = express();
 
@@ -74,7 +61,7 @@ sequelize.sync()
 .then( async () => {
 
   httpServer.listen({ port: environment.port }, () => {
-    console.log('Apollo Server on http://localhost:4000/graphql');
+    console.log('Apollo Server on http://localhost:' + process.env.PORT + '/graphql');
   });
 
 })

@@ -1,8 +1,8 @@
 import { ForbiddenError } from 'apollo-server';
 import { skip, TArgs } from 'graphql-resolvers';
-import { IContext, IArgID, IArgDeleteTask } from './resolver_interfaces';
+import { IContext } from './resolver_interfaces';
 
-export const isAuthenticated = (parent: undefined, args: TArgs, context: IContext) => {
+export const isAuthenticated = (_: undefined, __: TArgs, context: IContext) => {
     if(context.auth){
         skip
     }
@@ -11,7 +11,7 @@ export const isAuthenticated = (parent: undefined, args: TArgs, context: IContex
     }
 };
 
-export const isListOwner = async (parent: undefined, args: TArgs, context: IContext) => {
+export const isListOwner = async (_: undefined, args: TArgs, context: IContext) => {
     if(context.auth){
         const result = await context.models.List.findOne({
             where:{
@@ -33,7 +33,7 @@ export const isListOwner = async (parent: undefined, args: TArgs, context: ICont
 }
 
 
-export const permitedTaskDelete = async (parent: undefined, args: TArgs, context: IContext) => {
+export const permitedTaskDelete = async (_: undefined, args: TArgs, context: IContext) => {
     if(args.inPublicList){
         skip
     }

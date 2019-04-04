@@ -18,7 +18,6 @@ const SUB_UPDATE_TASK = 'SUB_UPDATE_TASK';
 const SUB_DELETE_TASK = 'SUB_DELETE_TASK';
 
 const ADD = 1;
-const DELETE = 2;
 const UPDATE = 3;
 
 export default{
@@ -29,7 +28,7 @@ export default{
 
     Query: {
         //tasks(listId: ID!): [Task]
-        tasks: async (parent: undefined, args: IArgAddTask, context: IContext) => {
+        tasks: async (_: undefined, args: IArgAddTask, context: IContext) => {
             try{
                 return await context.models.Task.findAll({
                     where: {
@@ -45,7 +44,7 @@ export default{
         },
 
         //task(id: ID!): Task
-        task: async (parent:undefined, args: IArgID, context: IContext) => {
+        task: async (_:undefined, args: IArgID, context: IContext) => {
             try{
                 return await context.models.Task.findOne({
                     where: {
@@ -66,7 +65,7 @@ export default{
         //addTask(listId: ID!, text: String!): Task
         addTask: combineResolvers(
             isAuthenticated,
-            async (parent, args, {models, auth}) => {
+            async (_, args, {models, auth}) => {
                 try{
                     let result = await models.Task.create({
                         listId: args.listId,
@@ -94,7 +93,7 @@ export default{
         //deleteTask(id: ID!, inPublicList: Boolean!): String
         deleteTasks: combineResolvers(
             permitedTaskDelete,
-            async (parent, args, {models}) => {
+            async (_, args, {models}) => {
                 try{
                     
                     const result = await models.Task.findOne({
@@ -124,7 +123,7 @@ export default{
         //markDone(id: ID!, done: Boolean!): Boolean
         markDone: combineResolvers(
             isAuthenticated,
-            async (parent, args, {models}) => {
+            async (_, args, {models}) => {
                 try{
                     let result = await models.Task.update(
                         { done: args.done }, 
@@ -169,7 +168,7 @@ export default{
                     return pubsub.asyncIterator([SUB_DELETE_TASK]); 
                 },
     
-                (payload, args, { models, auth }) => {
+                (payload, _, { auth }) => {
                     if( payload.deleteSub.inPublicList == true ){
                         return true
                     }
@@ -188,7 +187,7 @@ export default{
     },
 
     Task: {
-        list: async (parent: Task, args: undefined, context: IContext) => {
+        list: async (parent: Task, _: undefined, context: IContext) => {
             try{
                 let result = await context.models.List.findOne({
                     where: {
