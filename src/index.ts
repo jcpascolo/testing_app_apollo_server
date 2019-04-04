@@ -2,7 +2,6 @@
 //docker exec -it postgres psql -U postgres tododb
 ////"start": "nodemon --exec babel-node --extensions \".js, .ts\" src/index.ts",
 
-require('dotenv/config');
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express');
 import { environment } from './environment'
@@ -12,6 +11,19 @@ import schema from './schemas/schemas';
 import resolvers from './resolvers/resolvers';
 import models, { sequelize } from './models/models';
 import jwt from 'jsonwebtoken';
+
+console.log(process.env.PORT)
+console.log(process.env.DB_USER)
+console.log(process.env.DB_HOST)
+  console.log(process.env.DB_USER)
+    console.log(process.env.DB_PASS)
+      console.log(process.env.DB_NAME)
+        console.log(process.env.DB_PORT)
+          console.log(process.env.RD_HOST)
+            console.log(process.env.RD_PORT)
+              console.log(process.env.PORT)
+                console.log(process.env.JWT_KEY)
+                  console.log(process.env.EXPIRE_TOKEN)
 
 
 const app = express();
@@ -41,16 +53,14 @@ const authentication = async (reqHeader: any) => {
   }
 }
 
-console.log("pepito")
-
 const server = new ApolloServer({ 
   typeDefs: schema,
   resolvers,
   context: async (reqHeader: any) => {
     return {
       models,
-      JWT_KEY: environment.jwt_key,
-      EXPIRE_TOKEN: environment.expire_token,
+      jwt_key: environment.jwt_key,
+      expire_token: environment.expire_token,
       auth: await authentication(reqHeader),
     }
   }, 

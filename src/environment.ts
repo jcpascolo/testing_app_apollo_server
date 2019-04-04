@@ -1,4 +1,3 @@
-require('dotenv/config');
 const defaultPort = 4000;
 
 interface Environment {

@@ -3,16 +3,6 @@ import bcrypt from 'bcrypt';
 import { IContext, IArgLogUser, IArgAddUser, IArgID } from './resolver_interfaces';
 
 
-//subscription task
-const SUB_UPDATE_USER = 'SUB_UPDATE_USER';
-const SUB_DELETE_USER = 'SUB_DELETE_USER';
-
-const ADD = 1;
-const DELETE = 2;
-const UPDATE = 3;
-
-
-
 export default {
     
     Query: {
@@ -56,12 +46,12 @@ export default {
     
                 const { id, username, email } = result
                 console.log("EXPIRED IN: ")
-                console.log(context.EXPIRE_TOKEN)
+                console.log(context.expire_token)
                 return {username: username,
                         token: jwt.sign(
                             { id, email }, 
-                            context.JWT_KEY, 
-                            { expiresIn: context.EXPIRE_TOKEN }
+                            context.jwt_key, 
+                            { expiresIn: context.expire_token }
                         )};
             }
             catch(err){
@@ -92,8 +82,8 @@ export default {
                         return {username: username,
                             token: jwt.sign(
                                 { id, email }, 
-                                context.JWT_KEY, 
-                                { expiresIn: context.EXPIRE_TOKEN }
+                                context.jwt_key, 
+                                { expiresIn: context.expire_token }
                             )};
                     }
                     else{

@@ -5,8 +5,8 @@ import { isAuthenticated, permitedTaskDelete } from './auth_resolver';
 
 const pubsub = new RedisPubSub({
     connection:{
-        host: '127.0.0.1',
-        port: 6379
+        host: process.env.RD_HOST || '127.0.0.1',
+        port: parseInt(process.env.RD_PORT || '6379')
     }
 });
 

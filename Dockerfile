@@ -13,11 +13,10 @@ RUN npm run build
 
 # Make port 80 available to the world outside this container
 EXPOSE 4000
-EXPOSE 5432
-EXPOSE 6379
 
 # Define environment variable
-ENV NAME World
+ENV JWT_KEY supersecret123
+ENV EXPIRE_TOKEN 7d
 
 # Run app.py when the container launches
 CMD ["npm", "start"]

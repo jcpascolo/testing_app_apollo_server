@@ -7,8 +7,8 @@ import { IContext, IArgID, List } from './resolver_interfaces';
 
 const pubsub = new RedisPubSub({
     connection:{
-        host: '127.0.0.1',
-        port: 6379
+        host: process.env.RD_HOST || '127.0.0.1',
+        port: parseInt(process.env.RD_PORT || '6379')
     }
 });
 
@@ -41,11 +41,11 @@ export default{
                     });
                 }
                 else{
-                     result = await context.models.List.findAll({
-                         where: {
-                             public: true,
-                         }
-                     });
+                    result = await context.models.List.findAll({
+                        where: {
+                            public: true,
+                        }
+                    });
                 }
                 return result
             }
@@ -155,41 +155,3 @@ export default{
         }
     }
 };
-
-
-
-
-
-
-/*
-export default {    
-    Query: {
-        todo: async () => {
-            //return new Promise((resolve, reject) => {
-            //client.query('SELECT * FROM task').then((result) => resolve(result.rows))
-            //})
-    
-            const result = await client.query('select * from task');
-            console.log(result)
-            return result.rows
-        },
-    },
-    
-    Mutation: {
-        addTask: async (parent, arg) => {
-            console.log(arg)
-            const result = await client.query(`update task set tasks = array_cat(tasks, '{${arg.task}}') where id=${arg.id}`)
-            console.log(result)
-            //return result
-            return "cachi"
-        },
-    },
-    
-    Todo: {
-        tareas: (todo) => {
-            console.log(todo.tasks)
-            return todo.tasks
-        }
-    },
-    
-};*/

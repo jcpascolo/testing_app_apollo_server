@@ -16,8 +16,8 @@ const user = (sequelize, DataTypes) => {
             validate: {
             notEmpty: true,
             isEmail: true,
-            },
         },
+    },
 
         password: {
             type: DataTypes.STRING,

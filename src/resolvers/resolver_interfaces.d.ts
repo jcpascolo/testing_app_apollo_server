@@ -41,8 +41,8 @@ interface IModels {
 export interface IContext {
     auth: IAuth,
     models: IModels | any,
-    JWT_KEY: string,
-    EXPIRE_TOKEN: string,
+    jwt_key: string,
+    expire_token: string,
 }
 
 
