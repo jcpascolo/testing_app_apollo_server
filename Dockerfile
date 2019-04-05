@@ -9,19 +9,20 @@ COPY . /app
 RUN npm install
 RUN npm run build
 
-# Install any needed packages specified in requirements.txt
-
 # Make port 80 available to the world outside this container
-EXPOSE 4000
+
 
 # Define environment variable
 
 # Run app.py when the container launches
-CMD ["node", "dist/server.js"]
+#CMD ["node", "dist/server.js"]
 
 
 FROM node:10.15.3-alpine
-COPY --from=base /app/dist /app/dist
+WORKDIR /app
+COPY --from=base /app/dist /app
+COPY --from=base /app/package.json /app
 RUN npm install --production
-CMD ["node", "dist/server.js"]
+EXPOSE 4000
+CMD ["node", "server.js"]
 

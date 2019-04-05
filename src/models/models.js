@@ -1,6 +1,6 @@
 
 import Sequelize from 'sequelize';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
 const list_model = require('./list_model')
 const user_model = require('./user_model')
 const task_model = require('./task_model')

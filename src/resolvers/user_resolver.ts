@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt-nodejs';
 import { IContext, IArgLogUser, IArgAddUser, IArgID } from './resolver_interfaces';
 
 
@@ -74,7 +74,16 @@ export default {
                     throw new Error("Fallo al autenticar")
                 }
                 else{
-                    let validPassword = await bcrypt.compare(args.password, registered.password);
+                    let validPassword
+                    await bcrypt.compare(args.password, registered.password, (err, res) =>{
+                        if(err){
+                            throw new Error("Usuario no valido o password incorrecta")
+                        }
+                        else{
+                            console.log(res)
+                            validPassword = res
+                        }
+                    });
 
                     if(validPassword){
                         const { id, username, email } = registered
