@@ -37,7 +37,7 @@ export default {
     Mutation: {
         //addUser(username: String!, email: String!, password: String!): Token!
         addUser: async (_: undefined, args: IArgAddUser, context: IContext) => {
-            try{
+            try{                
                 let result = await context.models.User.create({
                     username: args.username,
                     email: args.email,
@@ -45,8 +45,6 @@ export default {
                 });    
     
                 const { id, username, email } = result
-                console.log("EXPIRED IN: ")
-                console.log(context.expire_token)
                 return {username: username,
                         token: jwt.sign(
                             { id, email }, 
@@ -64,6 +62,7 @@ export default {
         //logIn(email: String!, password: String!): Token!
         logIn: async (_: undefined, args: IArgLogUser, context: IContext) => {
             try{
+                console.log(typeof(context.models.User))
                 let registered = await context.models.User.findOne({
                     where: {
                         email: args.email,

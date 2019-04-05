@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --mode=production",
     "webpack-watch": "webpack --watch --mode=development",
-    "start": "concurrently --restart-after 10 -n webpack,nodemon \"npm run webpack-watch\" \"nodemon dist/server.js\"",
+    "start": "concurrently --restart-after 10 -n webpack,nodemon \"npm run webpack-watch\" \"nodemon dist/index.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "@types/validator": "^10.11.0",
     "awesome-typescript-loader": "^5.2.1",
     "concurrently": "^4.1.0",
+    "copy-webpack-plugin": "^5.0.2",
     "nodemon": "^1.18.10",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.1",

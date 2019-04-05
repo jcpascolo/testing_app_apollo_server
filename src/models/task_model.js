@@ -1,5 +1,6 @@
 
-const task = (sequelize, DataTypes) => {
+
+module.exports = function(sequelize, DataTypes){
     const Task = sequelize.define('task', {
       text: {
         type: DataTypes.STRING,
@@ -26,7 +27,8 @@ const task = (sequelize, DataTypes) => {
 
   
     return Task;
-  };
+}
+
   
-  export default task;
+//export default task;
 

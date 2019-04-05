@@ -1,6 +1,13 @@
+const { readdirSync, statSync } = require('fs')
+const { join } = require('path')
+
+
 
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt-nodejs';
+const path = require('path');
+import list from './list_model';
+import user from './user_model';
 const list_model = require('./list_model')
 const user_model = require('./user_model')
 const task_model = require('./task_model')
@@ -117,9 +124,9 @@ const user = (sequelize, DataTypes) => {
 
 
 const models = {
-    List: list_model,
-    Task: task_model,
-    User: user_model
+    List: sequelize.import('./list_model.js'),
+    Task: sequelize.import('./task_model.js'),
+    User: sequelize.import('./user_model.js')
 };
 
 Object.keys(models).forEach(key => {

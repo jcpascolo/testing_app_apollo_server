@@ -1,5 +1,6 @@
 
-const list = (sequelize, DataTypes) => {
+
+module.exports = function(sequelize, DataTypes) {
     const List = sequelize.define('list', {
       name: {
         type: DataTypes.STRING,
@@ -17,6 +18,7 @@ const list = (sequelize, DataTypes) => {
     };
   
   return List;
-};
+}
+
   
-export default list;
+//export default list;
