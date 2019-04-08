@@ -62,8 +62,7 @@ export default {
         //logIn(email: String!, password: String!): Token!
         logIn: async (_: undefined, args: IArgLogUser, context: IContext) => {
             try{
-                console.log(typeof(context.models.User))
-                let registered = await context.models.User.findOne({
+                const registered = await context.models.User.findOne({
                     where: {
                         email: args.email,
                     }
@@ -73,39 +72,25 @@ export default {
                     throw new Error("Fallo al autenticar")
                 }
                 else{
-                    let validPassword
-                    await bcrypt.compare(args.password, registered.password, (err, res) =>{
-                        if(err){
-                            throw new Error("Usuario no valido o password incorrecta")
-                        }
-                        else{
-                            console.log(res)
-                            validPassword = res
-                        }
-                    });
-
-                    if(validPassword){
-                        const { id, username, email } = registered
-
-                        return {username: username,
-                            token: jwt.sign(
-                                { id, email }, 
-                                context.jwt_key, 
-                                { expiresIn: context.expire_token }
-                            )};
+                    const response = bcrypt.compareSync(args.password, registered.password)                    
+                    if(!response){
+                        throw new Error("Password incorrecta")
                     }
                     else{
-                        throw new Error("Fallo al autenticar, contraseña incorrecta")
-                    }
+                        const { id, username, email } = registered                               
+                            return {username: username,
+                                token: jwt.sign(
+                                    { id, email }, 
+                                    context.jwt_key, 
+                                    { expiresIn: context.expire_token }
+                                )
+                            };
+                        }
                 }
             }
             catch(err){
-                throw new Error(err);
+                throw new Error("Error al autenticar" + err);
             }
-            
-            
-
-            
         },
 
     },

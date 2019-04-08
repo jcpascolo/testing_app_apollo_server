@@ -6,8 +6,9 @@
   "scripts": {
     "build": "webpack --mode=production",
     "webpack-watch": "webpack --watch --mode=development",
-    "start": "concurrently --restart-after 10 -n webpack,nodemon \"npm run webpack-watch\" \"nodemon dist/index.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently --restart-after 10 -n webpack,nodemon \"npm run webpack-watch\" \"nodemon dist/server.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "manual": "PORT=4000 JWT_KEY=supersecret123 EXPIRE_TOKEN=7d node dist/server.js"
   },
   "keywords": [],
   "author": "",
