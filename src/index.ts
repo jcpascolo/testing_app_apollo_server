@@ -57,8 +57,21 @@ server.applyMiddleware({ app });
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
-sequelize.sync()
-.then( async () => {
+const eraseDatabaseOnSync = process.env.ERASE_DB || false;
+const createDefaultUser = process.env.DEFAULT_USER || true;
+
+sequelize.sync( { force: eraseDatabaseOnSync })
+.then( async () => {  
+  if(createDefaultUser){
+    console.log("creating the test user")
+    await models.User.findOrCreate({
+      where: {
+        email: 'test@test.com'
+      }, 
+      defaults: {username: 'test', password: 'testpass'}
+    });
+  }
+  
 
   httpServer.listen({ port: environment.port }, () => {
     console.log('Apollo Server on http://localhost:' + process.env.PORT + '/graphql');
