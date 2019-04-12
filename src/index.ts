@@ -14,35 +14,41 @@ import jwt from 'jsonwebtoken';
 
 
 const app = express();
+app.use(cors());
+
 
 const authentication = async (reqHeader: any) => {
   let token;
 
-  if(reqHeader.req == undefined) {
+  if (reqHeader.req == undefined) {
     token = reqHeader.connection.context['x-token']
   }
   else {
     token = reqHeader.req.headers['x-token'];
   }
-  
-  if(token){
-    try{
+
+  if (token) {
+    try {
       return await jwt.verify(token, environment.jwt_key);
     }
-    catch(err){
+    catch (err) {
       return false
       //throw new AuthenticationError('Usuario no autenticado, por favor loggeese');
     }
   }
-  else{
+  else {
     return false;
     //throw new AuthenticationError('Usuario no autenticado')
   }
 }
 
-const server = new ApolloServer({ 
+
+const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
+  subscriptions: {
+    path: '/subscriptions',
+  },
   context: async (reqHeader: any) => {
     return {
       models,
@@ -50,31 +56,31 @@ const server = new ApolloServer({
       expire_token: environment.expire_token,
       auth: await authentication(reqHeader),
     }
-  }, 
+  },
 });
 server.applyMiddleware({ app });
+
 
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
+
 const eraseDatabaseOnSync = process.env.ERASE_DB || false;
 const createDefaultUser = process.env.DEFAULT_USER || true;
 
-sequelize.sync( { force: eraseDatabaseOnSync })
-.then( async () => {  
-  if(createDefaultUser){
-    console.log("creating the test user")
-    await models.User.findOrCreate({
-      where: {
-        email: 'test@test.com'
-      }, 
-      defaults: {username: 'test', password: 'testpass'}
+sequelize.sync({ force: eraseDatabaseOnSync })
+  .then(async () => {
+    if (createDefaultUser) {
+      await models.User.findOrCreate({
+        where: {
+          email: 'test@test.com'
+        },
+        defaults: { username: 'test', password: 'testpass' }
+      });
+    }
+
+    httpServer.listen({ port: environment.port }, () => {
+      console.log('Apollo Server on http://localhost:' + process.env.PORT + '/graphql');
+      console.log(`🚀 Subscriptions ready`);
     });
-  }
-  
-
-  httpServer.listen({ port: environment.port }, () => {
-    console.log('Apollo Server on http://localhost:' + process.env.PORT + '/graphql');
-  });
-
-})
+  })
